@@ -1,1 +1,1 @@
-create database projektBD
+CREATE DATABASE projektBD
