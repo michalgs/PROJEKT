@@ -23,6 +23,9 @@ CREATE TABLE Players(
     PlayerID INT PRIMARY KEY,
     Player_Name VARCHAR(50) NOT NULL,
     Player_Surname VARCHAR(50) NOT NULL,
+    Player_Nationality VARCHAR(3) NOT NULL,
+    Player_Birthdate DATE,
+    Player_Position VARCHAR(3) NOT NULL, 
     TeamID INT FOREIGN KEY REFERENCES Teams(TeamID)
 )
 GO
