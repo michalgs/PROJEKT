@@ -68,7 +68,7 @@ CREATE TABLE PolishCupMatches (
    MatchID INT PRIMARY KEY, 
    StadiumID INT FOREIGN KEY REFERENCES Stadiums(StadiumID),
    PlayOff_Round VARCHAR(10) NOT NULL,
-   FOREIGN KEY (MatchID) REFERENCES Matches(MatchID)
+   FOREIGN KEY (MatchID) REFERENCES Matches(MatchID) 
 )
 GO
 
