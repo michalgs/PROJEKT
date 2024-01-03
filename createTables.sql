@@ -43,21 +43,38 @@ CREATE TABLE Referees(
 )
 GO
 
-IF OBJECT_ID(N'dbo.LeagueMatches', N'U') IS NULL
-CREATE TABLE LeagueMatches(
+IF OBJECT_ID(N'dbo.Matches', N'U') IS NULL
+CREATE TABLE Matches(
     MatchID INT PRIMARY KEY,
     Match_Date DATE NOT NULL,
-    HostID INT FOREIGN KEY REFERENCES Teams(TeamID),
-    GuestID INT FOREIGN KEY REFERENCES Teams(TeamID),
-    Host_Goals INT NOT NULL,
-    Guest_Goals INT NOT NULL,
+    FirstTeam INT FOREIGN KEY REFERENCES Teams(TeamID),
+    SecondTeam INT FOREIGN KEY REFERENCES Teams(TeamID),
     RefereeID INT FOREIGN KEY REFERENCES Referees(RefereeID)
 )
 GO
 
-IF OBJECT_ID(N'dbo.LeagueMatchesPlayers', N'U') IS NULL
-CREATE TABLE LeagueMatchesPlayers(
-    MatchID INT FOREIGN KEY REFERENCES LeagueMatches(MatchID),
+IF OBJECT_ID(N'dbo.LeagueMatches', N'U') IS NULL
+CREATE TABLE LeagueMatches(
+   MatchID INT PRIMARY KEY,
+   HostID INT FOREIGN KEY REFERENCES Teams(TeamID),
+   Matchweek INT NOT NULL,
+   Round CHAR CHECK (Round = 'W' OR Round = 'J'), -- runda wiosenna albo jesienna
+   FOREIGN KEY (MatchID) REFERENCES Matches(MatchID)
+)
+GO
+
+IF OBJECT_ID(N'dbo.PolishCupMatches', N'U') IS NULL
+CREATE TABLE PolishCupMatches (
+   MatchID INT PRIMARY KEY, 
+   StadiumID INT FOREIGN KEY REFERENCES Stadiums(StadiumID),
+   PlayOff_Round VARCHAR(10) NOT NULL,
+   FOREIGN KEY (MatchID) REFERENCES Matches(MatchID)
+)
+GO
+
+IF OBJECT_ID(N'dbo.MatchesPlayers', N'U') IS NULL
+CREATE TABLE MatchesPlayers(
+    MatchID INT FOREIGN KEY REFERENCES Matches(MatchID),
     PlayerID INT FOREIGN KEY REFERENCES Players(PlayerID),
     Goals_Scored INT,
     Yellow_Cards INT CHECK (Yellow_Cards BETWEEN 0 AND 2),
@@ -122,30 +139,6 @@ CREATE TABLE SponsorsPlayers (
    Contract_Start DATE NOT NULL,
    Contract_End DATE,
    PRIMARY KEY(SponsorID, PlayerID)
-)
-GO
-
-IF OBJECT_ID(N'dbo.PolishCup', N'U') IS NULL
-CREATE TABLE PolishCup (
-   MatchID INT PRIMARY KEY, 
-   StadiumID INT FOREIGN KEY REFERENCES Stadiums(StadiumID),
-   Match_Date DATE NOT NULL,
-   FirstTeam INT FOREIGN KEY REFERENCES Teams(TeamID),
-   SecondTeam INT FOREIGN KEY REFERENCES Teams(TeamID),
-   RefereeID INT FOREIGN KEY REFERENCES Referees(RefereeID),
-   PlayOff_Round VARCHAR(10) NOT NULL
-)
-GO
-
-
-IF OBJECT_ID(N'dbo.CupMatchesPlayers', N'U') IS NULL
-CREATE TABLE CupMatchesPlayers (
-   MatchID INT FOREIGN KEY REFERENCES PolishCup(MatchID), 
-   PlayerID INT FOREIGN KEY REFERENCES Players(PlayerID),
-   Goals_Scored INT,
-   Yellow_Cards INT CHECK (Yellow_Cards BETWEEN 0 AND 2),
-   Red_Cards INT CHECK (Red_Cards BETWEEN 0 AND 1),
-   PRIMARY KEY(MatchID, PlayerID)
 )
 GO
 
