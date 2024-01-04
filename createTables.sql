@@ -101,7 +101,7 @@ CREATE TABLE PlayerTeam (
    PlayerID INT FOREIGN KEY REFERENCES Players(PlayerID),
    TeamID INT FOREIGN KEY REFERENCES Teams(TeamID),
    Start_Work DATE NOT NULL,
-   End_Work DATE,
+   End_Work DATE NOT NULL,
    PRIMARY KEY(PlayerID, TeamID)
 )
 GO
