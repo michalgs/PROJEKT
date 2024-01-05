@@ -152,6 +152,6 @@ CREATE TABLE SeasonWinners (
    SeasonSponsorID INT FOREIGN KEY REFERENCES Sponsors(SponsorID),
    WinnerID INT FOREIGN KEY REFERENCES Teams(TeamID),
    LastTeamID INT FOREIGN KEY REFERENCES Teams(TeamID),
-   BestScorrerID INT FOREIGN KEY REFERENCES Players(PlayerID)
+   TopScorerID INT FOREIGN KEY REFERENCES Players(PlayerID)
 )
 GO
