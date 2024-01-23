@@ -52,6 +52,8 @@ CREATE TABLE Matches(
     Match_Date DATE NOT NULL,
     FirstTeam INT FOREIGN KEY REFERENCES Teams(TeamID),
     SecondTeam INT FOREIGN KEY REFERENCES Teams(TeamID),
+    FirstTeamScore INT,
+    SecondTeamScore INT,
     RefereeID INT FOREIGN KEY REFERENCES Referees(RefereeID)
 )
 GO
