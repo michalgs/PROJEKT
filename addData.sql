@@ -57,7 +57,7 @@ VALUES
 (15, 'Kazimierz', 'Moskal'),
 (16, 'Piotr', 'Stokowiec');
 
-INSERT INTO Referees
+INSERT INTO Referees(RefereeID, Referee_Name, Referee_Surname)
 VALUES
 (1, 'Marcin', 'Borski'),
 (2, 'Bartosz', 'Frankowski'),

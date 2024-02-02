@@ -42,7 +42,10 @@ IF OBJECT_ID(N'dbo.Referees', N'U') IS NULL
 CREATE TABLE Referees(
     RefereeID INT PRIMARY KEY,
     Referee_Name VARCHAR(50) NOT NULL,
-    Referee_Surname VARCHAR(50) NOT NULL
+    Referee_Surname VARCHAR(50) NOT NULL,
+    Yellow_Cards_Given INT DEFAULT 0,
+    Red_Cards_Given INT DEFAULT 0,
+    Matches_Refereed INT DEFAULT 0
 )
 GO
 
