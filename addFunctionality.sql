@@ -44,7 +44,7 @@ GO
 
 CREATE VIEW LeagueTable
 AS
-	SELECT T.Team_Name Zespol, 0 [Mecze], 0 Punkty, 0 [Bramki zdobyte], 0 [Bramki stracone]
+	SELECT TOP 16 T.Team_Name Zespol, 0 [Mecze], 0 Punkty, 0 [Bramki zdobyte], 0 [Bramki stracone]
 	FROM Teams T
 	ORDER BY [Punkty], [Bramki zdobyte], Zespol
 GO
