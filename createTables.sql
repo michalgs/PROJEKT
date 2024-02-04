@@ -57,8 +57,11 @@ CREATE TABLE Matches(
     SecondTeam INT FOREIGN KEY REFERENCES Teams(TeamID),
     FirstTeamScore INT,
     SecondTeamScore INT,
-    RefereeID INT FOREIGN KEY REFERENCES Referees(RefereeID)
+    RefereeID INT FOREIGN KEY REFERENCES Referees(RefereeID),
+    Is_Confirmed BIT,
 )
+
+
 GO
 
 IF OBJECT_ID(N'dbo.LeagueMatches', N'U') IS NULL
@@ -154,7 +157,6 @@ GO
 IF OBJECT_ID(N'dbo.SeasonWinners', N'U') IS NULL
 CREATE TABLE SeasonWinners (
    Season VARCHAR(15) PRIMARY KEY,
-   SeasonSponsorID INT FOREIGN KEY REFERENCES Sponsors(SponsorID),
    WinnerID INT FOREIGN KEY REFERENCES Teams(TeamID),
    LastTeamID INT FOREIGN KEY REFERENCES Teams(TeamID),
    TopScorerID INT FOREIGN KEY REFERENCES Players(PlayerID)
