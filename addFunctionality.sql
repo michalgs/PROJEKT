@@ -189,3 +189,23 @@ AS
 	FROM LeagueTable
 	ORDER BY [Punkty] DESC, [Bramki zdobyte] DESC, [Zespol] ASC
 GO
+
+CREATE VIEW DisplayPolishCup
+AS
+	SELECT PM.PlayOff_Round Runda, [dbo].[TeamNameFromID](M.FirstTeam) [Pierwszy zespol], [dbo].[TeamNameFromID](M.SecondTeam) [Drugi zespol], M.FirstTeamScore [Wynik], M.FirstTeamScore [koncowy],
+	CASE WHEN (M.FirstTeamScore > M.SecondTeamScore) 
+	THEN
+		[dbo].[TeamNameFromID](M.FirstTeam)
+	ELSE CASE WHEN (M.FirstTeamScore > M.SecondTeamScore) 
+	THEN
+		[dbo].[TeamNameFromID](M.SecondTeam)
+ 	END
+	END Zwyciezca
+	FROM PolishCupMatches PM JOIN Matches M ON PM.MatchID = M.MatchID
+
+GO 
+
+CREATE VIEW SeasonsHistory
+AS
+	SELECT Season [Sezon], [dbo].[TeamNameFromID](WinnerID) [Mistrz], [dbo].[TeamNameFromID](LastTeamID) [Spadkowicz], TopScorer [Krol strzelcow] 
+	FROM SeasonWinners
