@@ -18,6 +18,16 @@ CREATE TABLE Teams(
 )
 GO
 
+IF OBJECT_ID(N'dbo.LeagueTable', N'U') IS NULL
+CREATE TABLE LeagueTable(
+   TeamID INT PRIMARY KEY,
+   Matches INT DEFAULT 0,
+   Points INT DEFAULT 0,
+   GoalsScored INT DEFAULT 0,
+   GoalsConceded INT DEFAULT 0
+)
+GO
+
 IF OBJECT_ID(N'dbo.Players', N'U') IS NULL
 CREATE TABLE Players(
     PlayerID INT PRIMARY KEY,
@@ -159,6 +169,6 @@ CREATE TABLE SeasonWinners (
    Season VARCHAR(15) PRIMARY KEY,
    WinnerID INT FOREIGN KEY REFERENCES Teams(TeamID),
    LastTeamID INT FOREIGN KEY REFERENCES Teams(TeamID),
-   TopScorerID INT FOREIGN KEY REFERENCES Players(PlayerID)
+   TopScorerID VARCHAR(50)
 )
 GO

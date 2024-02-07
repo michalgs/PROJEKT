@@ -1,4 +1,3 @@
---DROP DATABASE ProjectDB
 USE ProjectDB
 GO
 CREATE VIEW CurrentCoaches
@@ -15,6 +14,8 @@ BEGIN
 	RETURN (SELECT (Player_Name + ' ' + Player_Surname) FROM Players WHERE PlayerID = @ID)
 END
 GO
+
+
 
 CREATE VIEW TopScorers
 AS
@@ -42,12 +43,7 @@ AS
 	WHERE PlayerID = @TransferedPlayerID
 GO
 
-CREATE VIEW LeagueTable
-AS
-	SELECT TOP 16 T.Team_Name Zespol, 0 [Mecze], 0 Punkty, 0 [Bramki zdobyte], 0 [Bramki stracone]
-	FROM Teams T
-	ORDER BY [Punkty], [Bramki zdobyte], Zespol
-GO
+
 
 CREATE FUNCTION TeamNameFromID (@ID INT)
 RETURNS VARCHAR(50)
@@ -119,11 +115,77 @@ GO
 CREATE PROCEDURE AddPlayerContribution @MatchID INT, @PlayerID INT, @Goals INT, @YellowCards INT, @RedCards INT
 AS
 BEGIN
-	IF [dbo].[PlayerPlayedTheGame](@PlayerID, @MatchID) = 'TRUE'
+	IF [dbo].[PlayerPlayedTheGame](@PlayerID, @MatchID) = 'TRUE' AND (SELECT Is_Confirmed FROM Matches WHERE MatchID = @MatchID) = 0
 		INSERT INTO MatchesPlayers
 		VALUES (@MatchID, @PlayerID, @Goals, @YellowCards, @RedCards)
 	ELSE
-		PRINT 'Zawodnik nie uczestniczyl w meczu'
+		PRINT 'Zawodnik nie uczestniczyl w meczu lub mecz potwierdzony'
 END
 GO
 
+CREATE PROCEDURE ConfirmMatch (@MID INT)
+AS
+BEGIN
+	-- Sprawdzamy czy mecz istnieje w bazie
+	IF (SELECT MatchID FROM Matches WHERE MatchID = @MID) IS NULL
+		RETURN
+
+	-- W przypadku bezbramkowego remisu w tablicy dalej widnieja NULLE wiec zmienamy je na zera
+	UPDATE Matches
+	SET FirstTeamScore = CASE WHEN (SELECT FirstTeamScore FROM Matches WHERE MatchID = @MID) IS NULL THEN 0 ELSE FirstTeamScore END,
+		SecondTeamScore = CASE WHEN (SELECT SecondTeamScore FROM Matches WHERE MatchID = @MID) IS NULL THEN 0 ELSE SecondTeamScore END
+	WHERE MatchID = @MID
+
+	-- Sprawdzamy czy potwierdzamy mecz ligowy
+	IF (SELECT LM.MatchID FROM LeagueMatches LM JOIN Matches M ON LM.MatchID = M.MatchID WHERE LM.MatchID = @MID) IS NOT NULL
+	BEGIN
+		-- Jesli tak, to dodajemy punkty i bramki do tabeli ligowej
+		DECLARE @HomeTeam INT = (SELECT FirstTeam FROM Matches WHERE MatchID = @MID),
+				@AwayTeam INT = (SELECT SecondTeam FROM Matches WHERE MatchID = @MID),
+				@HomeGoals INT = (SELECT FirstTeamScore FROM Matches WHERE MatchID = @MID),
+				@AwayGoals INT = (SELECT SecondTeamScore FROM Matches WHERE MatchID = @MID)
+				
+		-- Update gospodarzy
+		UPDATE LeagueTable
+		SET Points = CASE WHEN (@HomeGoals > @AwayGoals) THEN
+						Points + 3 
+					 ELSE (CASE WHEN (@HomeGoals = @AwayGoals) THEN
+					 		  Points + 1 
+						   ELSE 
+							  Points 
+						   END)
+					 END,
+			GoalsScored = GoalsScored + @HomeGoals,
+			GoalsConceded = GoalsConceded + @AwayGoals,
+			Matches = Matches + 1
+		WHERE TeamID = @HomeTeam
+		
+		-- Update gosci
+		UPDATE LeagueTable
+		SET Points = CASE WHEN (@AwayGoals > @HomeGoals) THEN
+						Points + 3 
+					 ELSE (CASE WHEN (@AwayGoals = @HomeGoals) THEN
+					          Points + 1 
+						   ELSE 
+						   	  Points
+						   END)
+					 END,
+			GoalsScored = GoalsScored + @AwayGoals,
+			GoalsConceded = GoalsConceded + @HomeGoals,
+			Matches = Matches + 1
+		WHERE TeamID = @AwayTeam
+	END
+	
+	-- Na koniec zmieniamy status Is_Confirmed na 1 niezaleznie od tego, czy mecz ligowy czy pucharowy
+	UPDATE Matches
+	SET Is_Confirmed = 1
+	WHERE MatchID = @MID
+END
+GO
+
+CREATE VIEW DisplayLeagueTable
+AS
+	SELECT TOP 16 [dbo].[TeamNameFromID](TeamID) Zespol, Matches [Mecze], Points [Punkty], GoalsScored [Bramki zdobyte], GoalsConceded [Bramki stracone]
+	FROM LeagueTable
+	ORDER BY [Punkty] DESC, [Bramki zdobyte] DESC, [Zespol] ASC
+GO

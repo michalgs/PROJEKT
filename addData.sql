@@ -38,6 +38,9 @@ VALUES
 (15, 'Wisła Kraków', 15),
 (16, 'Zagłębie Lubin', 16);
 
+INSERT INTO LeagueTable(TeamID)
+SELECT TeamID FROM Teams
+
 INSERT INTO Coaches
 VALUES
 (1, 'Jacek', 'Zieliński'),
@@ -455,9 +458,9 @@ VALUES
 
 INSERT INTO SeasonWinners
 VALUES
-('2012/1013', 8, 12, 1148),
-('2013/2014', 8, 16, 1089),
-('2014/2015', 6, 2, 1194);
+('2012/1013', 8, 12, 'Robert Demjan'),
+('2013/2014', 8, 16, 'Marcin Robak'),
+('2014/2015', 6, 2, 'Flavio Paixao');
 
 INSERT INTO Matches
 VALUES

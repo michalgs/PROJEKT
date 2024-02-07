@@ -79,16 +79,16 @@ BEGIN
 		DECLARE @Year INT;
 		SET @Year = YEAR(GETDATE()) - 8
 		DECLARE @Season NVARCHAR(30) = FORMATMESSAGE('%d/%d', @Year-1, @Year);
-		DECLARE @Winner NVARCHAR(50) = (SELECT TOP 1 Zespol FROM LeagueTable)
-		DECLARE @LastTeam NVARCHAR(50) = ((SELECT TOP 16 Zespol FROM LeagueTable) EXCEPT (SELECT TOP 15 Zespol FROM LeagueTable))
+		DECLARE @Winner INT = (SELECT TOP 1 TeamID FROM LeagueTable)
+		DECLARE @LastTeam INT = ((SELECT TOP 16 TeamID FROM LeagueTable) EXCEPT (SELECT TOP 15 TeamID FROM LeagueTable))
 		DECLARE @Top NVARCHAR(50) = (SELECT TOP 1 Zawodnik FROM TopScorers)
 		
 		INSERT INTO SeasonWinners VALUES
 		(@Season, @Winner, @LastTeam, @Top)
 		
 		PRINT 'Wpisano wartosci dla sezonu'  + @Season + ':'
-		PRINT 'Zwyciezca: ' + @Winner
-		PRINT 'Spadkowicz: ' + @LastTeam
+		PRINT 'Zwyciezca: ' + [dbo].[TeamNameFromID](@Winner)
+		PRINT 'Spadkowicz: ' + [dbo].[TeamNameFromID](@LastTeam)
 		PRINT 'Krol strzelcow: ' + @Top
 	END
 END 
