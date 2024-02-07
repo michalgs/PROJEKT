@@ -169,6 +169,6 @@ CREATE TABLE SeasonWinners (
    Season VARCHAR(15) PRIMARY KEY,
    WinnerID INT FOREIGN KEY REFERENCES Teams(TeamID),
    LastTeamID INT FOREIGN KEY REFERENCES Teams(TeamID),
-   TopScorerID VARCHAR(50)
+   TopScorer VARCHAR(50)
 )
 GO

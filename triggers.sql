@@ -72,7 +72,7 @@ ON dbo.Matches
 AFTER UPDATE
 AS
 BEGIN
-	IF (UPDATE(Is_confirmed) AND EXISTS (SELECT 1 FROM INSERTED WHERE MatchID = 2240))
+	IF (UPDATE(Is_confirmed) AND EXISTS (SELECT Is_Confirmed FROM INSERTED WHERE MatchID = 2240) AND (SELECT Is_Confirmed FROM INSERTED WHERE MatchID = 2240) = 1)
     BEGIN
         PRINT 'Sezon zakonczony, wpisuje mistrza do tabeli';
 
@@ -103,19 +103,20 @@ BEGIN
 	DECLARE @Player_ID INT
 	DECLARE @Red INT
 	DECLARE @Yellow INT
+	DECLARE @Match_ID INT
 	DECLARE Iterator CURSOR FOR
-	SELECT PlayerID, Yellow_Cards, Red_Cards FROM INSERTED
+	SELECT PlayerID, Yellow_Cards, Red_Cards, MatchID FROM INSERTED
 	OPEN Iterator
-	FETCH NEXT FROM Iterator INTO @Player_ID, @Yellow, @Red
+	FETCH NEXT FROM Iterator INTO @Player_ID, @Yellow, @Red, @Match_ID
 	WHILE @@FETCH_STATUS = 0	
 		BEGIN
 			IF @Red = 1 OR @Yellow = 2
 			BEGIN
-				DECLARE @Date DATE = CONVERT(DATE, DATEADD(YEAR, -5, GETDATE()))
+				DECLARE @Date DATE = (SELECT Match_Date FROM Matches WHERE MatchID = @Match_ID)
 				INSERT INTO OutOfGame VALUES
 				(@Player_ID, @Date, CONVERT(DATE, DATEADD(DAY, +10, @Date)), 'Cards')
 			END
-		FETCH NEXT FROM Iterator INTO @Player_ID, @Yellow, @Red
+		FETCH NEXT FROM Iterator INTO @Player_ID, @Yellow, @Red, @Match_ID
 		END
 	CLOSE Iterator
 	DEALLOCATE Iterator
