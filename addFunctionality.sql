@@ -209,3 +209,10 @@ CREATE VIEW SeasonsHistory
 AS
 	SELECT Season [Sezon], [dbo].[TeamNameFromID](WinnerID) [Mistrz], [dbo].[TeamNameFromID](LastTeamID) [Spadkowicz], TopScorer [Krol strzelcow] 
 	FROM SeasonWinners
+GO
+
+CREATE FUNCTION GetCupRound (@Round VARCHAR(50))
+RETURNS TABLE
+AS
+	RETURN (SELECT * FROM PolishCupMatches WHERE [PlayOff_Round] = @Round)
+GO
