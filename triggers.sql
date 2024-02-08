@@ -153,6 +153,14 @@ BEGIN
 				SET Yellow_Cards_Given = Yellow_Cards_Given + @Yellow
 				WHERE RefereeID = @Ref_ID
 			END
+			
+			IF @Red = 1
+			BEGIN
+				UPDATE Referees 
+				SET Red_Cards_Given = Red_Cards_Given + @Red
+				WHERE RefereeID = @Ref_ID
+			END
+			
 
 		FETCH NEXT FROM Iterator INTO @Match_ID, @Yellow, @Red
 		END
